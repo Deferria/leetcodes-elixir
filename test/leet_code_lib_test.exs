@@ -18,4 +18,21 @@ defmodule LeetCodeLibTest do
     res = LeetCodeLib.get_permutation(3, 5)
     IO.puts("Res: #{res}")
   end
+
+  test "notest text justification 1st pass" do
+    res = LeetCodeLib.full_justify(
+      ["This", "is", "an", "example", "of", "text", "justification."],
+      16
+    )
+    IO.inspect(res)
+  end
+
+  test "notest text justification" do
+    res = LeetCodeLib.full_justify(
+      ["This", "is", "an", "example", "of", "text", "justification."],
+      16
+    )
+    expected = ["This    is    an","example  of text","justification.  "]
+    assert res == expected
+  end
 end
