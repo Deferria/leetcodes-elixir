@@ -27,12 +27,21 @@ defmodule LeetCodeLibTest do
     IO.inspect(res)
   end
 
-  test "notest text justification" do
+  test "test text justification" do
     res = LeetCodeLib.full_justify(
       ["This", "is", "an", "example", "of", "text", "justification."],
       16
     )
     expected = ["This    is    an","example  of text","justification.  "]
     assert res == expected
+  end
+
+  test "test my_sqrt" do
+    assert LeetCodeLib.my_sqrt(9) == 3
+  end
+
+  test "notest combine meta" do
+    res = LeetCodeLib.combine(5,3)
+    IO.inspect(res)
   end
 end
