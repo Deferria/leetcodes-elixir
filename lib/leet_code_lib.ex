@@ -80,6 +80,7 @@ defmodule LeetCodeLib do
     ans = recursive_justify(words, max_width, 0, [], [])
     n = length(ans)
     inds = Enum.to_list(1..n)
+
     res_rev =
       Enum.zip_reduce(inds, ans, [], fn i, ls, acc ->
         cond do
@@ -171,6 +172,7 @@ defmodule LeetCodeLib do
 
   defp my_sqrt_meta(l, r, x) do
     mid = div(l + r, 2)
+
     cond do
       mid * mid > x -> my_sqrt_meta(l, mid, x)
       mid * mid < x -> my_sqrt_meta(mid, r, x)
@@ -253,6 +255,88 @@ defmodule LeetCodeLib do
       []
     else
       Enum.flat_map(start..max_start, &combine_flatmapping(&1 + 1, n, k - 1, [&1 | path]))
+    end
+  end
+
+  @doc """
+  This is the solution to the Leetcode Problem 78. "Subsets". We need to return all possible subsets (the power set) of a given set of distinct integers.
+  """
+  @spec subsets(nums :: [integer]) :: [[integer]]
+  def subsets(nums) do
+    subset_meta(nums, [])
+  end
+
+  defp subset_meta([], current), do: [current]
+
+  defp subset_meta(nums, current) do
+    [a | remains] = nums
+    subset_meta(remains, [a | current]) ++ subset_meta(remains, current)
+  end
+
+  @doc """
+  This is the solution to the Leetcode Problem 97. "Interleaving String". We need to determine if a string s3 is formed by interleaving two strings s1 and s2.
+
+  This implementation uses dynamic programming to solve the problem. It reduces the 2D dp table to a 1D array.
+
+  *Runtime: 32 ms on LeetCode Elixir*
+  """
+  @spec is_interleave_1(s1 :: String.t(), s2 :: String.t(), s3 :: String.t()) :: boolean
+  def is_interleave_1(s1, s2, s3) do
+    m = String.length(s1)
+    n = String.length(s2)
+
+    cond do
+      m + n != String.length(s3) -> false
+      n == 0 -> s1 == s3
+      m == 0 -> s2 == s3
+      true ->
+        c1 = String.to_charlist(s1)
+        c2 = String.to_charlist(s2)
+        c3 = String.to_charlist(s3)
+        init =
+          Enum.scan(Enum.to_list(1..n), true, fn j, acc ->
+            acc and Enum.at(c2, j - 1) == Enum.at(c3, j - 1)
+          end)
+
+        dp =
+          Enum.reduce(Enum.to_list(1..m), [true | init], fn i, acc ->
+            prev = Enum.at(c1, i - 1) == Enum.at(c3, i - 1) and hd(acc)
+            curr =
+              Enum.scan(Enum.to_list(1..n), prev, fn j, acc_inner ->
+                (acc_inner and Enum.at(c2, j - 1) == Enum.at(c3, i + j - 1)) or
+                  (Enum.at(c1, i - 1) == Enum.at(c3, i + j - 1) and Enum.at(tl(acc), j - 1))
+              end)
+            [prev | curr]
+          end)
+
+        Enum.at(tl(dp), -1, true)
+    end
+  end
+
+  @doc """
+  This is a better solution to the Leetcode Problem 97. "Interleaving String".
+  Here we use more functional programming style to reduce the 2D dp table to a 1D array, and we also use pattern matching to make the code more precise.
+
+  *Runtime: 19 ms on LeetCode Elixir*
+  """
+  @spec is_interleave(s1 :: String.t, s2 :: String.t, s3 :: String.t) :: boolean
+  def is_interleave(s1, s2, s3) do
+    if String.length(s1) + String.length(s2) != String.length(s3) do
+      false
+    else
+      c1 = [?^ | String.to_charlist(s1)]
+      c2 = [?^ | String.to_charlist(s2)]
+      c3 = [?^ | String.to_charlist(s3)]
+      v = List.duplicate(true, length(c2))
+      dp = Enum.reduce(c1, {v, c3}, fn ch1, {acc, lst} ->
+        Enum.zip([acc, c2, lst]) |> Enum.scan(true, fn
+          {true, _, ^ch1}, _ -> true
+          {_, ch2, ch2}, true -> true
+          _, _ -> false
+        end)
+        |> then(fn x -> {x, tl(lst)} end)
+      end)
+      elem(dp, 0) |> List.last()
     end
   end
 end

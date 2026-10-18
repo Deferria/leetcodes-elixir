@@ -44,4 +44,21 @@ defmodule LeetCodeLibTest do
     res = LeetCodeLib.combine(5,3)
     IO.inspect(res)
   end
+
+  test "notest subsets meta" do
+    res = LeetCodeLib.subsets([1,2,3])
+    IO.inspect(res)
+  end
+
+  test "test interleave string" do
+    assert LeetCodeLib.is_interleave("dbbca", "aabcc", "aadbbcbcac") == true
+  end
+
+  test "test interleave string 2" do
+    assert LeetCodeLib.is_interleave("dbbca", "aabcc", "aadbbbaccc") == false
+  end
+
+  test "test interleave string 3" do
+    assert LeetCodeLib.is_interleave("db", "b", "cbb") == false
+  end
 end
