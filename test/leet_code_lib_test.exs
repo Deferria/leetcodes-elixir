@@ -61,4 +61,8 @@ defmodule LeetCodeLibTest do
   test "test interleave string 3" do
     assert LeetCodeLib.is_interleave("db", "b", "cbb") == false
   end
+
+  test "test largest rectangle area" do
+    assert LeetCodeLib.largest_rectangle_area([2, 1, 5, 6, 2, 3]) == 10
+  end
 end

@@ -308,7 +308,6 @@ defmodule LeetCodeLib do
               end)
             [prev | curr]
           end)
-
         Enum.at(tl(dp), -1, true)
     end
   end
@@ -337,6 +336,37 @@ defmodule LeetCodeLib do
         |> then(fn x -> {x, tl(lst)} end)
       end)
       elem(dp, 0) |> List.last()
+    end
+  end
+
+  @doc """
+  This is a solution to the Leetcode Problem 84. "Largest Rectangle in Histogram".
+  It uses a stack-based approach to find the largest rectangle in the histogram, which might not be so functional.
+  """
+  @spec largest_rectangle_area(heights :: [integer]) :: integer
+  def largest_rectangle_area(heights) do
+    n = length(heights)
+    {stack, area} = heights
+      |> Enum.with_index()
+      |> Enum.reduce({[], 0}, fn {h, i}, {st, a} ->
+        {stack, area, start} = largest_rectangle_area_inner(st, i, h, a, i)
+        IO.inspect(stack)
+        {[{start, h} | stack], area}
+      end)
+
+    Enum.reduce(stack, area, fn {left_ind, h}, acc ->
+      max(acc, (n-left_ind)*h)
+    end)
+  end
+
+  defp largest_rectangle_area_inner([], _right_bound, _h, area, start), do: {[], area, start}
+
+  defp largest_rectangle_area_inner([{left_bound, hprev} | rest], right_bound, h, area, start) do
+    if h < hprev do
+      area_new = max(area, (right_bound - left_bound) * hprev)
+      largest_rectangle_area_inner(rest, right_bound, h, area_new, left_bound)
+    else
+      {[{left_bound, hprev} | rest], area, start}
     end
   end
 end
