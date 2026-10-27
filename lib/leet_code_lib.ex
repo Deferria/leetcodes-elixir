@@ -369,4 +369,60 @@ defmodule LeetCodeLib do
       {[{left_bound, hprev} | rest], area, start}
     end
   end
+
+  @doc """
+  This is a solution to the Leetcode Problem 115. Distinct Subsequences.
+  """
+  @spec num_distinct(s :: String.t, t :: String.t) :: integer
+  def num_distinct(s, t) do
+    dp = Enum.reverse([1 | List.duplicate(0, String.length(t))])
+    char_s = String.to_charlist(s)
+    char_t = String.to_charlist(t) ++ [?^]
+    Enum.reduce(Enum.reverse(char_s), dp, fn ch, lst ->
+      shifted = tl(lst) ++ [hd(lst)]
+      Enum.zip_with([char_t, lst, shifted], fn [ch2, i, j] ->
+        if ch2 == ch do i+j else i end
+      end)
+    end) |> List.first()
+  end
+
+  @spec max_profit_inner(prices :: [integer], max_trans :: integer) :: integer
+  defp max_profit_inner(prices, max_trans) do
+    n = length(prices)
+    dp = List.duplicate(0, n)
+    Enum.reduce(1..(max_trans), dp, fn _k, ls ->
+      shifted = [List.last(ls)] ++ Enum.slice(ls, 1..(n-1))
+      #IO.inspect(shifted)
+      Enum.scan(Enum.zip(prices, shifted), fn {price, dpprev}, {diff, dpi} ->
+        diff_new = min(diff, price - dpprev)
+        {diff_new, max(price - diff_new, dpi)}
+      end) |> Enum.into([], fn {_diff, val} -> val end)
+    end) |> List.last()
+  end
+
+  @doc """
+  This is a solution to the Leetcode Problem 123. Best Time to Buy and Sell Stock III.
+  This solution uses explicit dynamic programming to track the maximal profit achivable with at most k transactions. In this problem k=2.
+  """
+  @spec max_profit_1(prices :: [integer]) :: integer
+  def max_profit_1(prices) do
+    max_profit_inner(prices, 2)
+  end
+
+  @doc """
+  This is a solution to the Leetcode Problem 123. Best Time to Buy and Sell Stock III.
+  This solution is dedicated to the case of k=2. Then we can name the variables and update them in a clear way.
+  """
+  @spec max_profit(prices :: [integer]) :: integer
+  def max_profit(prices) do
+    init = {2147483647, 0, 2147483647, 0}
+    {_, _, _, ans} = Enum.reduce(prices, init, fn p, {b1, s1, b2, s2} ->
+      b1_new = min(b1, p)
+      s1_new = max(s1, p-b1_new)
+      b2_new = min(b2, p-s1_new)
+      s2_new = max(s2, p-b2_new)
+      {b1_new, s1_new, b2_new, s2_new}
+    end)
+    ans
+  end
 end

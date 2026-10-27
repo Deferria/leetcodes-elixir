@@ -65,4 +65,20 @@ defmodule LeetCodeLibTest do
   test "test largest rectangle area" do
     assert LeetCodeLib.largest_rectangle_area([2, 1, 5, 6, 2, 3]) == 10
   end
+
+  test "test num distinct" do
+    assert LeetCodeLib.num_distinct("babgbag", "bag") == 5
+  end
+
+  test "test max profit iii" do
+    assert LeetCodeLib.max_profit([3,3,5,0,0,3,1,4]) == 6
+  end
+
+  test "test max profit iii 2" do
+    assert LeetCodeLib.max_profit([1,3,4,6,2,3,2,4,0]) == 7
+  end
+
+  test "test max profit iii 3" do
+    assert LeetCodeLib.max_profit([1,2,4,2,5,7,2,4,9,0]) == 13
+  end
 end

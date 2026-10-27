@@ -19,8 +19,10 @@ A library for solving LeetCode problems in Elixir.
 - [78. Subsets](https://leetcode.com/problems/subsets/), 1 Solution
 - [97. Interleaving String](https://leetcode.com/problems/interleaving-string/), 2 Solutions
 - [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/), 1 Solution
+- [115. Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/), 1 Solution
+- [123. Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/), 2 Solutions
 
-## Installation
+## Installation (Not published yet)
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `leetcodes` to your list of dependencies in `mix.exs`:
