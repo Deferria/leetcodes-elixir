@@ -425,4 +425,89 @@ defmodule LeetCodeLib do
     end)
     ans
   end
+
+  @spec forward_bfs(q :: :queue.queue(String.t), found :: boolean, wordset :: MapSet.t(String.t), dists :: map, preces :: map, stopword :: String.t) :: {map, boolean}
+  defp forward_bfs(q, found, wordset, dists, preces, stopword) do
+    if :queue.is_empty(q) or found == true do
+      {preces, found}
+    else
+      n = :queue.len(q)
+      {q_new, found_new, dists_new, preces_new, visited_new} = Enum.reduce(1..n, {q, found, dists, preces, MapSet.new()}, fn _x, {q_old, found_old, dists_old, preces_old, visited_old} ->
+        {{:value, curr}, q2} = :queue.out(q_old)
+        {:ok, dist} = Map.fetch(dists_old, curr)
+        if curr == stopword do
+          {q2, true, dists_old, preces_old, visited_old}
+        else
+          curr_chars = String.to_charlist(curr)
+          validities = Enum.flat_map(Enum.with_index(curr_chars), fn {t, i} ->
+            Enum.map(String.to_charlist("abcdefghijklmnopqrstuvwxyz"), fn c ->
+              if c == t do
+                nil
+              else
+                testing = List.replace_at(curr_chars, i, c) |> List.to_string()
+                cond do
+                  testing == stopword -> {:vital, testing, curr}
+                  MapSet.member?(wordset, testing) -> {:normal, testing, curr}
+                  true -> nil
+                end
+              end
+            end)
+          end) |> Enum.reject(fn x -> x == nil end)
+          Enum.reduce(validities, {q2, found_old, dists_old, preces_old, visited_old}, fn t, {q_take, found_take, dists_take, preces_take, visited_take} ->
+            #IO.inspect(t)
+            case t do
+              {:vital, testing, curr} ->
+                pnew = Map.get(preces_take, testing, MapSet.new()) |> MapSet.put(curr)
+                {q_take, true, dists_take, Map.put(preces_take, testing, pnew), visited_take}
+              {:normal, testing, curr} ->
+                pnew = Map.get(preces_take, testing, MapSet.new()) |> MapSet.put(curr)
+                cond do
+                  not Map.has_key?(dists_take, testing) ->
+                    {:queue.in(testing, q_take), found_take, Map.put_new(dists_take, testing, dist+1), Map.put(preces_take, testing, pnew), MapSet.put(visited_take, testing)}
+                  Map.get(dists_take, testing) == dist + 1 -> {q_take, found_take, dists_take, Map.put(preces_take, testing, pnew), visited_take}
+                  true -> {q_take, found_take, dists_take, preces_take, visited_take}
+                end
+              true ->
+                {q_take, found_take, dists_take, preces_take, visited_take}
+            end
+          end)
+        end
+      end)
+      temp = MapSet.difference(wordset, visited_new)
+      #IO.inspect(preces_new)
+      forward_bfs(q_new, found_new, temp, dists_new, preces_new, stopword)
+    end
+  end
+
+  defp back_dfs(word, target, path, _query) when word == target do
+    #IO.inspect(path, label: "Adding:")
+    [path]
+  end
+
+  defp back_dfs(word, target, path, query) do
+    MapSet.to_list(Map.get(query, word)) |> Enum.flat_map(fn prec ->
+      back_dfs(prec, target, [prec | path], query)
+    end)
+  end
+
+  @doc """
+  This is a solution to the Leetcode Problem 126. Word Ladder II.
+  It uses simple BFS to find the shortest path and then DFS to construct the paths.
+  """
+  @spec find_ladders(begin_word :: String.t, end_word :: String.t, word_list :: [String.t]) :: [[String.t]]
+  def find_ladders(begin_word, end_word, word_list) do
+    word_set = MapSet.new(word_list) |> MapSet.delete(begin_word)
+    q = :queue.new()
+    if not MapSet.member?(word_set, end_word) do
+      []
+    else
+      {preces, found} = forward_bfs(:queue.in(begin_word, q), false, word_set, Map.new() |> Map.put(begin_word, 0), Map.new(), end_word)
+      if found == false do
+        []
+      else
+        #IO.inspect(preces)
+        back_dfs(end_word, begin_word, [end_word], preces)
+      end
+    end
+  end
 end

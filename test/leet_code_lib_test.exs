@@ -81,4 +81,9 @@ defmodule LeetCodeLibTest do
   test "test max profit iii 3" do
     assert LeetCodeLib.max_profit([1,2,4,2,5,7,2,4,9,0]) == 13
   end
+
+  test "test word ladder (should_panic)" do
+    res = LeetCodeLib.find_ladders("hit", "cog", ["hot","dot","dog","lot","log","cog"])
+    IO.inspect(res)
+  end
 end
