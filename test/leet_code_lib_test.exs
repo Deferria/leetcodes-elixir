@@ -82,8 +82,18 @@ defmodule LeetCodeLibTest do
     assert LeetCodeLib.max_profit([1,2,4,2,5,7,2,4,9,0]) == 13
   end
 
-  test "test word ladder (should_panic)" do
+  test "test word ladder" do
     res = LeetCodeLib.find_ladders("hit", "cog", ["hot","dot","dog","lot","log","cog"])
     IO.inspect(res)
+  end
+
+  test "test longest consecutive sequence" do
+    res = LeetCodeLib.longest_consecutive([100,3,200,1,4,2])
+    assert res == 4
+  end
+
+  test "test longest consecutive sequence 2" do
+    res = LeetCodeLib.longest_consecutive_1([7,1,2,3,4,5,6])
+    assert res == 7
   end
 end

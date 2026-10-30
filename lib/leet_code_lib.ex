@@ -454,7 +454,6 @@ defmodule LeetCodeLib do
             end)
           end) |> Enum.reject(fn x -> x == nil end)
           Enum.reduce(validities, {q2, found_old, dists_old, preces_old, visited_old}, fn t, {q_take, found_take, dists_take, preces_take, visited_take} ->
-            #IO.inspect(t)
             case t do
               {:vital, testing, curr} ->
                 pnew = Map.get(preces_take, testing, MapSet.new()) |> MapSet.put(curr)
@@ -473,14 +472,11 @@ defmodule LeetCodeLib do
           end)
         end
       end)
-      temp = MapSet.difference(wordset, visited_new)
-      #IO.inspect(preces_new)
-      forward_bfs(q_new, found_new, temp, dists_new, preces_new, stopword)
+      forward_bfs(q_new, found_new, MapSet.difference(wordset, visited_new), dists_new, preces_new, stopword)
     end
   end
 
   defp back_dfs(word, target, path, _query) when word == target do
-    #IO.inspect(path, label: "Adding:")
     [path]
   end
 
@@ -505,9 +501,62 @@ defmodule LeetCodeLib do
       if found == false do
         []
       else
-        #IO.inspect(preces)
         back_dfs(end_word, begin_word, [end_word], preces)
       end
     end
+  end
+
+  @doc """
+  This is the first solution to the Leetcode Problem 128. Longest Consecutive Sequence.
+
+  Keywords: Hashset, Recursion, Backtracking, Functional Programming
+  """
+  @spec longest_consecutive_1(nums :: [integer]) :: integer
+  def longest_consecutive_1(nums) do
+    elem(Enum.reduce(nums, {0, MapSet.new(nums)}, fn val, {acc, set} ->
+      [h1, t1] = longest_consecutive_inner(val, set, 0, :f)
+      [h2, t2] = longest_consecutive_inner(val-1, t1, h1, :b)
+      #IO.puts("get: #{h1}, #{h2}")
+      {max(acc, h2), t2}
+    end), 0)
+  end
+
+  defp longest_consecutive_inner(val, set, res, mod) do
+    if MapSet.member?(set, val) do
+      #IO.puts("#{val} is in the set")
+      if mod == :f do
+        longest_consecutive_inner(val+1, MapSet.delete(set, val), res+1, :f)
+      else
+        longest_consecutive_inner(val-1, MapSet.delete(set, val), res+1, :b)
+      end
+    else
+      [res, set]
+    end
+  end
+
+  @doc """
+  This is the second solution to the Leetcode Problem 128. Longest Consecutive Sequence. It uses sorting and a single pass to find the longest consecutive sequence.
+  """
+  @spec longest_consecutive(nums :: [integer]) :: integer
+  def longest_consecutive([]), do: 0
+  def longest_consecutive(nums) do
+    nums
+    |> Enum.sort()
+    |> check_nums(1, 1)
+  end
+
+  defp next_count(x, y, count) do
+    cond do
+      y == x + 1 -> count + 1
+      y == x -> count
+      true -> 1
+    end
+  end
+
+  defp check_nums([_head], count, biggest), do: max(count, biggest)
+
+  defp check_nums([head, head_2 |tail], count, biggest) do
+    new_count = next_count(head, head_2, count)
+    check_nums([head_2 | tail], new_count, max(biggest, new_count))
   end
 end

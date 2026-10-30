@@ -21,6 +21,8 @@ A library for solving LeetCode problems in Elixir.
 - [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/), 1 Solution
 - [115. Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/), 1 Solution
 - [123. Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/), 2 Solutions
+- [126. Word Ladder II](https://leetcode.com/problems/word-ladder-ii/), 1 Solution
+- [128. Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/), 2 Solutions
 
 ## Installation (Not published yet)
 
